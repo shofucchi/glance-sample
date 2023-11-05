@@ -30,9 +30,9 @@ class RetrofitService @Inject constructor(
 
     suspend fun sync(): Boolean {
         return withContext(ioDispatcher) {
-            val searchPhotos = getSearchedPhotos().body()
-            Log.d("debug", "${searchPhotos?.results}")
-            getSearchedPhotos().isSuccessful
+            val response = getSearchedPhotos()
+            Log.d("debug", "${response.body()?.results}")
+            response.isSuccessful
         }
     }
 
