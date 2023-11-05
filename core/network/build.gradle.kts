@@ -1,13 +1,15 @@
+import org.jetbrains.kotlin.konan.properties.Properties
+
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     alias(libs.plugins.com.android.library)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.dagger.hilt)
+    alias(libs.plugins.kotlin.serialization)
     kotlin("kapt")
 }
 
 android {
-    namespace = "io.github.shofucchi.glance"
+    namespace = "io.github.shofucchi.network"
     compileSdkPreview = "UpsideDownCake"
     compileSdk = 34
 
@@ -16,6 +18,9 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
+
+        val apiKey = Properties().readLocalProperties(key = "API_KEY")
+        buildConfigField("String", "API_KEY", "\"${apiKey}\"")
     }
 
     buildTypes {
@@ -35,22 +40,26 @@ android {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
     buildFeatures {
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.3"
+        buildConfig = true
     }
 }
 
 dependencies {
+
     implementation(libs.androidx.ktx)
-    implementation(libs.material)
-    implementation(libs.androidx.glance.appwidget)
+    implementation(libs.retrofit2)
+    implementation(libs.retrofit2.kotlin.serialization.converter)
+    implementation(libs.okhttp3)
+    implementation(libs.kotlinx.serialization)
     implementation(libs.dagger.hilt)
     kapt(libs.dagger.hilt.compiler)
-    implementation(project(":core:network"))
 }
 
-//kapt {
-//    correctErrorTypes = true
-//}
+kapt {
+    correctErrorTypes = true
+}
+
+fun Properties.readLocalProperties(key: String) = run {
+    this.load(project.rootProject.file("local.properties").inputStream())
+    return@run this.getProperty(key)
+}

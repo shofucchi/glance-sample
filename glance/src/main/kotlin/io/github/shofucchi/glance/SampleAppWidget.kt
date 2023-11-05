@@ -14,12 +14,21 @@ import androidx.glance.layout.Row
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.padding
 import androidx.glance.text.Text
+import dagger.hilt.android.EntryPointAccessors
+import io.github.shofucchi.network.RetrofitServiceEntryPoint
 
 class SampleAppWidget : GlanceAppWidget() {
-    override suspend fun provideGlance(
-        context: Context, id: GlanceId
-    ) = provideContent {
-        SampleWidgetContent()
+
+    override suspend fun provideGlance(context: Context, id: GlanceId) {
+        val retrofitServiceEntryPoint = EntryPointAccessors.fromApplication(
+            context.applicationContext,
+            RetrofitServiceEntryPoint::class.java
+        )
+        retrofitServiceEntryPoint.access().sync()
+
+        provideContent {
+            SampleWidgetContent()
+        }
     }
 
     @Composable
