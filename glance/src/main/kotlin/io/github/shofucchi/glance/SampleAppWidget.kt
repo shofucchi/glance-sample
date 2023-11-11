@@ -24,7 +24,7 @@ class SampleAppWidget : GlanceAppWidget() {
             context.applicationContext,
             RetrofitServiceEntryPoint::class.java
         )
-        retrofitServiceEntryPoint.access().sync()
+        retrofitServiceEntryPoint.access().getSearchedPhotos()
 
         provideContent {
             SampleWidgetContent()

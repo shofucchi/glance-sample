@@ -1,12 +1,12 @@
 package io.github.shofucchi.network
 
-import android.util.Log
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.shofucchi.network.api.UnsplashApi
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
 import javax.inject.Inject
 
@@ -17,25 +17,22 @@ interface RetrofitServiceEntryPoint {
     fun access(): RetrofitService
 }
 
-class RetrofitService @Inject constructor(
-    retrofit: Retrofit,
-    private val ioDispatcher: CoroutineDispatcher
-) : RetrofitServiceEntryPoint {
+class RetrofitService @Inject constructor(json: Json) : RetrofitServiceEntryPoint {
 
-    private val api = retrofit.create(UnsplashApi::class.java)
+    companion object {
+        private const val URL = "https://api.unsplash.com/"
+    }
+
+    private val api = Retrofit.Builder()
+        .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+        .baseUrl(URL)
+        .build()
+        .create(UnsplashApi::class.java)
 
     override fun access(): RetrofitService {
         return this
     }
 
-    suspend fun sync(): Boolean {
-        return withContext(ioDispatcher) {
-            val response = getSearchedPhotos()
-            Log.d("debug", "${response.body()?.results}")
-            response.isSuccessful
-        }
-    }
-
-    private suspend fun getSearchedPhotos() =
-        api.getSearchedPhotos(query = "cat", page = "10", id = BuildConfig.API_KEY)
+    suspend fun getSearchedPhotos() =
+        api.getSearchedPhotos(query = "cat", page = "10", id = BuildConfig.API_KEY).body()
 }

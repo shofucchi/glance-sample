@@ -41,7 +41,11 @@ dependencies {
     implementation(libs.okhttp3)
     implementation(libs.kotlinx.serialization)
     implementation(libs.dagger.hilt)
+    implementation(libs.kotlinx.coroutines)
     kapt(libs.dagger.hilt.compiler)
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.truth)
 }
 
 kapt {
