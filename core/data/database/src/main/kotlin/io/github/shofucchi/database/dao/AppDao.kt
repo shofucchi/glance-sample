@@ -8,7 +8,7 @@ import io.github.shofucchi.database.model.Photo
 
 @Dao
 interface PhotoDao {
-    @Query(value = "SELECT * FROM photos WHERE id")
+    @Query(value = "SELECT * FROM photos WHERE id in (:id)")
     fun findBy(id: Int): Photo
 
     @Insert

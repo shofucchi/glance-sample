@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 import io.github.shofucchi.database.dao.PhotoDao
 import io.github.shofucchi.database.model.Photo
 
-@Database(entities = [Photo::class], version = 1)
+@Database(entities = [Photo::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun photoDao(): PhotoDao
 }
